@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:tradejournalapp/data/provider/trade_provider.dart';
 import 'package:tradejournalapp/homeScreen/HomeScreen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_)=> TradeProvider())
+    ],
+    child: const MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {

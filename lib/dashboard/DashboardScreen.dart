@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:fl_chart/fl_chart.dart";
+import 'package:provider/provider.dart';
+import 'package:tradejournalapp/data/provider/trade_provider.dart';
 
 class Dashboardscreen extends StatefulWidget {
   const Dashboardscreen({super.key});
@@ -27,6 +29,10 @@ class _DashboardscreenState extends State<Dashboardscreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tradeProvider = Provider.of<TradeProvider>(context);
+    final trades = tradeProvider.trades;
+    print(trades[0].pair);
+
     final int winrate = ((win / jumlhTrade) * 100).round();
 
     return Scaffold(
@@ -46,7 +52,6 @@ class _DashboardscreenState extends State<Dashboardscreen> {
 
             const SizedBox(height: 20),
 
-
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,27 +64,10 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                       alignment: Alignment.center,
                       children: [
                         PieChart(
-                          // swapAnimationDuration: const Duration(
-                          //   milliseconds: 800,
-                          // ),
-                          // swapAnimationCurve: Curves.easeInOut,
                           PieChartData(
                             sections: _getSections(profit, lose),
                             centerSpaceRadius: 70,
                             sectionsSpace: 2,
-                            // pieTouchData: PieTouchData(
-                            //   enabled: true,
-                            //   touchCallback: (event, response) {
-                            //     if (response != null &&
-                            //         response.touchedSection != null) {
-                            //       final index =
-                            //           response
-                            //               .touchedSection!
-                            //               .touchedSectionIndex;
-                            //       debugPrint(index == 1 ? "lose" : "profit");
-                            //     }
-                            //   },
-                            // ),
                           ),
                         ),
                         Column(
