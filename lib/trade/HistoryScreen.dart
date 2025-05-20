@@ -24,8 +24,11 @@ class _HistoryscreenState extends State<Historyscreen> {
             final trade = trades[index];
             return InkWell(
               onTap: () {
-                Navigator.push(context,
-                MaterialPageRoute(builder: (context)=> Detailtradescreen(indexTrade: index))
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Detailtradescreen(indexTrade: index),
+                  ),
                 );
               },
               child: Container(
@@ -38,7 +41,9 @@ class _HistoryscreenState extends State<Historyscreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
-                  title: Text("${trade.pair} (${trade.timeframe}) | Lev : (${trade.leverage}x)"),
+                  title: Text(
+                    "${trade.pair} (${trade.timeframe}) | Lev : (${trade.leverage}x)",
+                  ),
                   subtitle: Text(
                     "Result : ${trade.result} | Emosi : ${trade.emotion}",
                   ),
