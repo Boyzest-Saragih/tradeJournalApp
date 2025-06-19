@@ -21,6 +21,7 @@ class TradeEntry {
   final bool properRiskManagement;
   final bool entryBySetup;
   final bool disciplinedSLTP;
+  final bool isDone;
 
   TradeEntry({
     required this.tradeTime,
@@ -42,6 +43,7 @@ class TradeEntry {
     required this.properRiskManagement,
     required this.entryBySetup,
     required this.disciplinedSLTP,
+    required this.isDone,
   });
 }
 
@@ -67,6 +69,7 @@ class TradeProvider with ChangeNotifier {
       properRiskManagement: true,
       entryBySetup: true,
       disciplinedSLTP: true,
+      isDone: true,
     ),
     TradeEntry(
       tradeTime: DateTime.parse("2025-05-03 15:45:00"),
@@ -88,6 +91,7 @@ class TradeProvider with ChangeNotifier {
       properRiskManagement: false,
       entryBySetup: false,
       disciplinedSLTP: true,
+      isDone: true,
     ),
     TradeEntry(
       tradeTime: DateTime.parse("2025-05-03 15:45:00"),
@@ -109,10 +113,18 @@ class TradeProvider with ChangeNotifier {
       properRiskManagement: false,
       entryBySetup: false,
       disciplinedSLTP: true,
+      isDone: true,
     ),
   ];
 
   List<TradeEntry> get trades => _trades;
+
+  List<TradeEntry> getTradesForMonth(DateTime month) {
+    return _trades.where((trade) {
+      return trade.tradeTime.month == month.month &&
+          trade.tradeTime.year == month.year;
+    }).toList();
+  }
 
   void addTrade(TradeEntry entry) {
     _trades.add(entry);

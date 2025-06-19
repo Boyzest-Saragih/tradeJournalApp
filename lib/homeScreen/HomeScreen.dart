@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('JourTrade.'),
+        title: Text('Plan, Wait, Execute.'),
         backgroundColor: Colors.blueGrey,
         foregroundColor: Colors.white,
       ),
@@ -51,9 +51,17 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                image: DecorationImage(
+                  image: NetworkImage(
+                    "https://plus.unsplash.com/premium_photo-1664476845274-27c2dabdd7f0?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  ),
+                  fit: BoxFit.cover
+                ),
+              ),
               child: Text(
-                'Menu',
+                'Loss is a Lesson',
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
