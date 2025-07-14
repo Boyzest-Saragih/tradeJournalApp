@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TradeEntry {
   final DateTime tradeTime;
@@ -7,6 +9,8 @@ class TradeEntry {
   final int leverage;
   final double entryPrice;
   final double exitPrice;
+  final double stopLoss;
+  final double takeProfit;
   final double pnl;
   final String beforeChartLink;
   final String afterChartLink;
@@ -30,6 +34,8 @@ class TradeEntry {
     required this.leverage,
     required this.entryPrice,
     required this.exitPrice,
+    required this.stopLoss,
+    required this.takeProfit,
     required this.pnl,
     required this.beforeChartLink,
     required this.afterChartLink,
@@ -45,99 +51,113 @@ class TradeEntry {
     required this.disciplinedSLTP,
     required this.isDone,
   });
+
+  // ✅ Convert ke JSON
+  Map<String, dynamic> toJson() => {
+        'tradeTime': tradeTime.toIso8601String(),
+        'position': position,
+        'margin': margin,
+        'leverage': leverage,
+        'entryPrice': entryPrice,
+        'exitPrice': exitPrice,
+        'stopLoss': stopLoss,
+        'takeProfit': takeProfit,
+        'pnl': pnl,
+        'beforeChartLink': beforeChartLink,
+        'afterChartLink': afterChartLink,
+        'pair': pair,
+        'timeframe': timeframe,
+        'strategy': strategy,
+        'result': result,
+        'emotion': emotion,
+        'notes': notes,
+        'followedStrategy': followedStrategy,
+        'properRiskManagement': properRiskManagement,
+        'entryBySetup': entryBySetup,
+        'disciplinedSLTP': disciplinedSLTP,
+        'isDone': isDone,
+      };
+
+  // ✅ Convert dari JSON
+  factory TradeEntry.fromJson(Map<String, dynamic> json) => TradeEntry(
+        tradeTime: DateTime.parse(json['tradeTime']),
+        position: json['position'],
+        margin: (json['margin'] as num).toDouble(),
+        leverage: json['leverage'],
+        entryPrice: (json['entryPrice'] as num).toDouble(),
+        exitPrice: (json['exitPrice'] as num).toDouble(),
+        stopLoss: (json['stopLoss'] as num).toDouble(),
+        takeProfit: (json['takeProfit'] as num).toDouble(),
+        pnl: (json['pnl'] as num).toDouble(),
+        beforeChartLink: json['beforeChartLink'],
+        afterChartLink: json['afterChartLink'],
+        pair: json['pair'],
+        timeframe: json['timeframe'],
+        strategy: json['strategy'],
+        result: json['result'],
+        emotion: json['emotion'],
+        notes: json['notes'],
+        followedStrategy: json['followedStrategy'],
+        properRiskManagement: json['properRiskManagement'],
+        entryBySetup: json['entryBySetup'],
+        disciplinedSLTP: json['disciplinedSLTP'],
+        isDone: json['isDone'],
+      );
 }
 
 class TradeProvider with ChangeNotifier {
-  final List<TradeEntry> _trades = [
-    TradeEntry(
-      tradeTime: DateTime.parse("2025-05-01 10:30:00"),
-      position: "Long",
-      margin: 20,
-      leverage: 10,
-      entryPrice: 0.45,
-      exitPrice: 0.60,
-      pnl: 10,
-      beforeChartLink: "https://s3.tradingview.com/snapshots/j/JYZL5Ywv.png",
-      afterChartLink: "https://s3.tradingview.com/snapshots/j/JYZL5Ywv.png",
-      pair: "XRP/USDT",
-      timeframe: "15m",
-      strategy: "FVG + CHoCH + OB",
-      result: "Win",
-      emotion: "Tenang",
-      notes: "Entry setelah price kembali ke OB. Ada rejeksi bagus.",
-      followedStrategy: true,
-      properRiskManagement: true,
-      entryBySetup: true,
-      disciplinedSLTP: true,
-      isDone: true,
-    ),
-    TradeEntry(
-      tradeTime: DateTime.parse("2025-05-03 15:45:00"),
-      position: "Short",
-      margin: 10,
-      leverage: 10,
-      entryPrice: 0.52,
-      exitPrice: 0.46,
-      pnl: -10,
-      beforeChartLink: "https://s3.tradingview.com/snapshots/j/JYZL5Ywv.png",
-      afterChartLink: "https://s3.tradingview.com/snapshots/j/JYZL5Ywv.png",
-      pair: "XRP/USDT",
-      timeframe: "15m",
-      strategy: "Breakout False + Retest",
-      result: "Loss",
-      emotion: "Ragu",
-      notes: "Masuk terlalu cepat, belum ada validasi volume.",
-      followedStrategy: false,
-      properRiskManagement: false,
-      entryBySetup: false,
-      disciplinedSLTP: true,
-      isDone: true,
-    ),
-    TradeEntry(
-      tradeTime: DateTime.parse("2025-05-03 15:45:00"),
-      position: "Short",
-      margin: 10,
-      leverage: 10,
-      entryPrice: 0.52,
-      exitPrice: 0.46,
-      pnl: 10,
-      beforeChartLink: "https://s3.tradingview.com/snapshots/j/JYZL5Ywv.png",
-      afterChartLink: "https://s3.tradingview.com/snapshots/j/JYZL5Ywv.png",
-      pair: "XRP/USDT",
-      timeframe: "15m",
-      strategy: "Breakout False + Retest",
-      result: "Win",
-      emotion: "Confidence",
-      notes: "Masuk terlalu cepat, belum ada validasi volume ",
-      followedStrategy: false,
-      properRiskManagement: false,
-      entryBySetup: false,
-      disciplinedSLTP: true,
-      isDone: true,
-    ),
-  ];
+  final List<TradeEntry> _trades = [];
 
-  List<TradeEntry> get trades => _trades;
+  List<TradeEntry> get trades => List.unmodifiable(_trades);
 
-  List<TradeEntry> getTradesForMonth(DateTime month) {
-    return _trades.where((trade) {
-      return trade.tradeTime.month == month.month &&
-          trade.tradeTime.year == month.year;
-    }).toList();
-  }
-
+  // ✅ Tambahkan trade & simpan ke lokal
   void addTrade(TradeEntry entry) {
     _trades.add(entry);
+    saveTrades();
     notifyListeners();
   }
 
-  void removeTrade(int index) {
-    _trades.removeAt(index);
-    notifyListeners();
-  }
-
+  // ✅ Update trade
   void updateTrade(int index, TradeEntry updatedEntry) {
-    _trades[index] = updatedEntry;
-    notifyListeners();
+    if (index >= 0 && index < _trades.length) {
+      _trades[index] = updatedEntry;
+      saveTrades();
+      notifyListeners();
+    }
+  }
+
+  // ✅ Hapus trade
+  void removeTrade(int index) {
+    if (index >= 0 && index < _trades.length) {
+      _trades.removeAt(index);
+      saveTrades();
+      notifyListeners();
+    }
+  }
+
+  // ✅ Ambil semua trade pada bulan tertentu
+  List<TradeEntry> getTradesForMonth(DateTime month) {
+    return _trades.where((trade) =>
+        trade.tradeTime.month == month.month &&
+        trade.tradeTime.year == month.year).toList();
+  }
+
+  // ✅ Simpan semua trade ke SharedPreferences (lokal)
+  Future<void> saveTrades() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encoded = jsonEncode(_trades.map((t) => t.toJson()).toList());
+    await prefs.setString('trades', encoded);
+  }
+
+  // ✅ Load semua trade dari lokal saat startup
+  Future<void> loadTrades() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString('trades');
+    if (raw != null) {
+      final List<dynamic> decoded = jsonDecode(raw);
+      _trades.clear();
+      _trades.addAll(decoded.map((e) => TradeEntry.fromJson(e)));
+      notifyListeners();
+    }
   }
 }

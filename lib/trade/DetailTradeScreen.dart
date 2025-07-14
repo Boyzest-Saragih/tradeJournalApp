@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tradejournalapp/data/provider/trade_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:webview_flutter/webview_flutter.dart'; // Tambahkan ini
+import 'webview_page.dart'; // Pastikan import file webview_page.dart
 
 class Detailtradescreen extends StatefulWidget {
   final int indexTrade;
-
   const Detailtradescreen({super.key, required this.indexTrade});
 
   @override
@@ -64,10 +65,9 @@ class _DetailtradescreenState extends State<Detailtradescreen>
                   _buildDetailRow(
                     'Position',
                     '${trade.position} (x${trade.leverage})',
-                    color:
-                        trade.position == "Long"
-                            ? Colors.green[800]
-                            : Colors.red[800],
+                    color: trade.position == "Long"
+                        ? Colors.green[800]
+                        : Colors.red[800],
                   ),
                   _buildDivider(),
                   _buildDetailRow(
@@ -141,9 +141,9 @@ class _DetailtradescreenState extends State<Detailtradescreen>
                 ],
               ),
               const SizedBox(height: 16),
-              _buildImageSection('Before Trade', trade.beforeChartLink),
+              _buildWebViewButton('Before Trade Chart', trade.beforeChartLink),
               const SizedBox(height: 16),
-              _buildImageSection('After Trade', trade.afterChartLink),
+              _buildWebViewButton('After Trade Chart', trade.afterChartLink),
             ],
           ),
         ),
@@ -151,6 +151,43 @@ class _DetailtradescreenState extends State<Detailtradescreen>
     );
   }
 
+  Widget _buildWebViewButton(String label, String url) {
+    return GestureDetector(
+      onTap: () {
+        if (url.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WebViewPage(url: url, title: label),
+            ),
+          );
+        }
+      },
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+          height: 180,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.open_in_browser, size: 36, color: Colors.blueGrey),
+              const SizedBox(height: 12),
+              Text(
+                "Tap to open $label",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Sisanya tetap
   Widget _buildInfoCard({
     required String title,
     required List<Widget> children,
@@ -188,10 +225,9 @@ class _DetailtradescreenState extends State<Detailtradescreen>
   }) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading:
-          icon != null
-              ? Icon(icon, color: color ?? Colors.blueGrey[600], size: 20)
-              : null,
+      leading: icon != null
+          ? Icon(icon, color: color ?? Colors.blueGrey[600], size: 20)
+          : null,
       title: Row(
         children: [
           Expanded(
@@ -234,33 +270,23 @@ class _DetailtradescreenState extends State<Detailtradescreen>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              leftLabel,
-              style: TextStyle(color: Colors.blueGrey[600], fontSize: 14),
-            ),
-            Text(
-              leftValue,
-              style: TextStyle(
-                color: Colors.blueGrey[800],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(leftLabel,
+                style: TextStyle(color: Colors.blueGrey[600], fontSize: 14)),
+            Text(leftValue,
+                style: TextStyle(
+                    color: Colors.blueGrey[800],
+                    fontWeight: FontWeight.bold)),
           ],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              rightLabel,
-              style: TextStyle(color: Colors.blueGrey[600], fontSize: 14),
-            ),
-            Text(
-              rightValue,
-              style: TextStyle(
-                color: rightColor ?? Colors.blueGrey[800],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(rightLabel,
+                style: TextStyle(color: Colors.blueGrey[600], fontSize: 14)),
+            Text(rightValue,
+                style: TextStyle(
+                    color: rightColor ?? Colors.blueGrey[800],
+                    fontWeight: FontWeight.bold)),
           ],
         ),
       ],
@@ -279,57 +305,6 @@ class _DetailtradescreenState extends State<Detailtradescreen>
         style: TextStyle(
           color: Colors.blueGrey[800],
           fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImageSection(String title, String imageUrl) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueGrey[800],
-              ),
-            ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 200,
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(
-                      value:
-                          loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                    ),
-                  );
-                },
-                errorBuilder:
-                    (context, error, stackTrace) => Container(
-                      height: 200,
-                      color: Colors.grey[200],
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.broken_image),
-                    ),
-              ),
-            ),
-          ],
         ),
       ),
     );

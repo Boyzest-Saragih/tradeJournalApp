@@ -55,7 +55,7 @@ class _HistoryscreenState extends State<Historyscreen> {
     int index,
     Animation<double> animation,
   ) {
-    final isWin = trade.result == "Win";
+    final isWin = trade.result.toLowerCase() == "win";
     final dateFormat = DateFormat('MMM dd, yyyy - HH:mm');
 
     return SlideTransition(
