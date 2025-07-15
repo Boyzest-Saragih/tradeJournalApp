@@ -65,7 +65,7 @@ Proyek ini dibangun menggunakan **Flutter** dan berfokus pada **simpanan data lo
 
 ## 🧑‍💻 Developer
 
-> Proyek ini dibuat oleh **Murid**, mahasiswa yang sedang dalam proses recovery akun trading, sambil belajar disiplin dan membangun portofolio Flutter.
+> Proyek ini dibuat oleh **Boyokers**, mahasiswa yang sedang dalam proses recovery akun trading, sambil belajar disiplin dan membangun portofolio Flutter.
 
 ---
 
